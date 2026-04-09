@@ -1189,15 +1189,26 @@ actions:
                           url: "{{attachment|replace( base_url, telegram_base_url )}}"
                   - conditions: "{{ pushover }}"
                     sequence:
-                      - action: "notify.{{ pushover_notify_service }}"
-                        data:
-                          title: "{{title}}"
-                          message: "{{message}}"
-                          target: "{{ pushover_target }}"
-                          data:
-                            url: "{{tap_action}}"
-                            url_title: "Open"
-                            attachment: "{{attachment}}"
+                      - if: "{{ pushover_target | length > 0 }}"
+                        then:
+                          - action: "notify.{{ pushover_notify_service }}"
+                            data:
+                              title: "{{title}}"
+                              message: "{{message}}"
+                              target: "{{ pushover_target }}"
+                              data:
+                                url: "{{tap_action}}"
+                                url_title: "Open"
+                                attachment: "{{attachment}}"
+                        else:
+                          - action: "notify.{{ pushover_notify_service }}"
+                            data:
+                              title: "{{title}}"
+                              message: "{{message}}"
+                              data:
+                                url: "{{tap_action}}"
+                                url_title: "Open"
+                                attachment: "{{attachment}}"
                   - conditions: "{{ not notify_group_target }}"
                     sequence:
                       - device_id: !input notify_device
@@ -1577,15 +1588,26 @@ actions:
                                     - [["{{button_3}}", "{{url_3}}"]]
                           - conditions: "{{ pushover }}"
                             sequence:
-                              - action: "notify.{{ pushover_notify_service }}"
-                                data:
-                                  title: "{{title}}"
-                                  message: "{{message}}"
-                                  target: "{{ pushover_target }}"
-                                  data:
-                                    url: "{{tap_action}}"
-                                    url_title: "Open"
-                                    attachment: "{{attachment}}"
+                              - if: "{{ pushover_target | length > 0 }}"
+                                then:
+                                  - action: "notify.{{ pushover_notify_service }}"
+                                    data:
+                                      title: "{{title}}"
+                                      message: "{{message}}"
+                                      target: "{{ pushover_target }}"
+                                      data:
+                                        url: "{{tap_action}}"
+                                        url_title: "Open"
+                                        attachment: "{{attachment}}"
+                                else:
+                                  - action: "notify.{{ pushover_notify_service }}"
+                                    data:
+                                      title: "{{title}}"
+                                      message: "{{message}}"
+                                      data:
+                                        url: "{{tap_action}}"
+                                        url_title: "Open"
+                                        attachment: "{{attachment}}"
                           - conditions: "{{ not notify_group_target }}"
                             sequence:
                               - device_id: !input notify_device
@@ -2065,15 +2087,26 @@ actions:
                                               - [["{{button_3}}", "{{url_3}}"]]
                                 - conditions: "{{ pushover }}"
                                   sequence:
-                                    - action: "notify.{{ pushover_notify_service }}"
-                                      data:
-                                        title: "{{title}}"
-                                        message: "{{message}}"
-                                        target: "{{ pushover_target }}"
-                                        data:
-                                          url: "{{tap_action}}"
-                                          url_title: "Open"
-                                          attachment: "{{attachment}}"
+                                    - if: "{{ pushover_target | length > 0 }}"
+                                      then:
+                                        - action: "notify.{{ pushover_notify_service }}"
+                                          data:
+                                            title: "{{title}}"
+                                            message: "{{message}}"
+                                            target: "{{ pushover_target }}"
+                                            data:
+                                              url: "{{tap_action}}"
+                                              url_title: "Open"
+                                              attachment: "{{attachment}}"
+                                      else:
+                                        - action: "notify.{{ pushover_notify_service }}"
+                                          data:
+                                            title: "{{title}}"
+                                            message: "{{message}}"
+                                            data:
+                                              url: "{{tap_action}}"
+                                              url_title: "Open"
+                                              attachment: "{{attachment}}"
                                 - conditions: "{{ not notify_group_target }}"
                                   sequence:
                                     - device_id: !input notify_device
