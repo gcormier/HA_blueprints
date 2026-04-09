@@ -105,6 +105,28 @@ blueprint:
             If set, this will override individual devices and groups above. Note: TV (far below) must be set to false.
             Base URL must start with https since telegram URL buttons only work with https.
           default: ""
+    pushover:
+      name: |
+        # Pushover Configuration
+      description: These are Pushover specific Options.
+      icon: mdi:bell-alert
+      collapsed: true
+      input:
+        pushover_notify_service:
+          name: Pushover Notify Service (Optional)
+          description: |
+            The name of your Pushover notify service in Home Assistant (the part after notify.).
+            If set, Pushover will be used instead of the mobile app and group notifications above.
+            Note: The Pushover integration must already be installed and configured.
+            Example: If your service is notify.pushover, enter: pushover
+          default: ""
+        pushover_target:
+          name: Pushover Target Device(s) (Optional)
+          description: |
+            Specify which device(s) receive the notification. Leave blank to send to all devices in your Pushover account.
+            Enter a single device name as configured in your Pushover account. To target multiple devices,
+            create a Pushover Delivery Group and use the group's user key when setting up the integration.
+          default: ""
     notification_customisations:
       name: |
         # Notification Customisations
@@ -1002,6 +1024,9 @@ variables:
   notify_group_target: "{{ notify_group | lower | regex_replace('^notify\\.', '') | replace(' ','_') }}"
   telegram_chat_id: !input notify_telegram_chat_id
   telegram: "{{true if (telegram_chat_id | length > 0) else false}}"
+  pushover_notify_service: !input pushover_notify_service
+  pushover_target: !input pushover_target
+  pushover: "{{true if (pushover_notify_service | length > 0) else false}}"
   zone_only: !input zone_filter
   input_zones: !input zones
   zones: "{{ input_zones | list | lower }}"
@@ -1162,6 +1187,17 @@ actions:
                           chat_id: "{{telegram_chat_id}}"
                           caption: "{{message}}"
                           url: "{{attachment|replace( base_url, telegram_base_url )}}"
+                  - conditions: "{{ pushover }}"
+                    sequence:
+                      - action: "notify.{{ pushover_notify_service }}"
+                        data:
+                          title: "{{title}}"
+                          message: "{{message}}"
+                          target: "{{ pushover_target }}"
+                          data:
+                            url: "{{tap_action}}"
+                            url_title: "Open"
+                            attachment: "{{attachment}}"
                   - conditions: "{{ not notify_group_target }}"
                     sequence:
                       - device_id: !input notify_device
@@ -1465,6 +1501,9 @@ actions:
                               TV Interrupt: {{tv_interrupt}}, 
                             Telegram: {{telegram}},
                             Telegram_chat_id: {{telegram_chat_id}},
+                            Pushover: {{pushover}},
+                            Pushover Service: {{pushover_notify_service}},
+                            Pushover Target: {{pushover_target}},
                           Filters: 
                             Severity:
                               Required Severity: {{input_severity}},
@@ -1536,6 +1575,17 @@ actions:
                                         ["{{button_2}}", "{{url_2}}"],
                                       ]
                                     - [["{{button_3}}", "{{url_3}}"]]
+                          - conditions: "{{ pushover }}"
+                            sequence:
+                              - action: "notify.{{ pushover_notify_service }}"
+                                data:
+                                  title: "{{title}}"
+                                  message: "{{message}}"
+                                  target: "{{ pushover_target }}"
+                                  data:
+                                    url: "{{tap_action}}"
+                                    url_title: "Open"
+                                    attachment: "{{attachment}}"
                           - conditions: "{{ not notify_group_target }}"
                             sequence:
                               - device_id: !input notify_device
@@ -2013,6 +2063,17 @@ actions:
                                                   ["{{button_2}}", "{{url_2}}"],
                                                 ]
                                               - [["{{button_3}}", "{{url_3}}"]]
+                                - conditions: "{{ pushover }}"
+                                  sequence:
+                                    - action: "notify.{{ pushover_notify_service }}"
+                                      data:
+                                        title: "{{title}}"
+                                        message: "{{message}}"
+                                        target: "{{ pushover_target }}"
+                                        data:
+                                          url: "{{tap_action}}"
+                                          url_title: "Open"
+                                          attachment: "{{attachment}}"
                                 - conditions: "{{ not notify_group_target }}"
                                   sequence:
                                     - device_id: !input notify_device
